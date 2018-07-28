@@ -1,0 +1,36 @@
+sudo: false
+language: node_js
+
+node_js:
+- node
+
+cache:
+  directories:
+  - node_modules
+
+matrix:
+  include:
+  - os: osx
+  - os: linux
+
+dist: trusty
+
+# Package the app for the corresponding os
+before_deploy:
+  - yarn package
+  - ls release
+  - ./build_tools/travis/before_deploy.sh
+
+deploy:
+  provider: gcs
+  access_key_id:
+    secure: ZJOzT56M26K2rxnZK7NXLEo1GvTQHiQ6wV3JrFHYzkITDG3/RqzujM9Hm83WfTGUgCWdKGGJaVr9uW86UcuwijXvdt8LlASXuH5XjedbQawfI396vmdwUO9NSZukOp/8aZ0kmL2WA8PrxyTNp89uk+5xz6c1BdW4VBuh9jNdjce4q2y5jg/RnpLfUUfatt3bguNjw6eA1R/Fn0dmISIz4n4Ac/g4rjfXPqqEu6TPVPX3+BkiNiSzd5vECIFJpcDVIyNAwiXFQkWTNh28SsrTPyAYBKrCy/bA9h++7PED78yF663T9+xHlVXK9jW0FTAQjL5VhqtFXhdKZsvhDcNF887pw7mOItMomqk7On9KogeZWbsr8y9GorC5Er7iRsNgI8K+fLqyDWEUfiKGCuQQ3YCDTHmNmmNNvzumSlmZvnuDyYj/tvaUmqSSCbsqNsConQWe7esU+Daa6dd14I1f2ZT6Fo+mia3JY3fOju3N7Myrb9mrvz6qi2MKSnXk2Q2KzBLYgVBoAgZeAkBM/gFudduCwcOooOQaB5oePeBqQ8LuTWUdQKs0/hCiZ6gfFYDjye+T8qttciAnlHtxlYTkoiEx+R1r7TooG0xazKXqVYkBmUof0oGDOPwmy4BJbrPbpRM4eufIAKLZXd2fksViZ3l/ZpOV0hA3AG24ZD++xxo=
+  secret_access_key:
+    secure: BoAiMCoCbYUEIBdVgNdxidEsm+qlY/z1SBWnOMfvhUsILX5VdONWSQ+dN/HDebbuQcDEA0J5Rjv/3QCs25PMpicluYuutML5iJ3oezP1SOntGpUBiT6rO6PYcjPLAULYwnenkcCafMddu+FhhvylIw9NeqhifELK8hN0F1WD7tsbepPKXBRRCFuLhqISvwr81oxdp38kXWdR5rxXnEe0NtThL9f5QHsSo5/ZcubHL3OqH31x7BpI2blObHLbwMNPoHfXdWcGU8ynMrTX1Wj+DYtCzFJQHlFFBRvM/VubvSOKbQRzPsIe4B3OgFlsMiaY9O0HrJvLDAgcVa7kFZGpiC+UrjsX0CCw6puGu1jyc8jReJ2UoVPXPZkY+wc+jHepwfvhwGQOqqHPs3MY4T1vM3z+yMysZHVak9yzW1DqGg9ZM3foZrAsSY5cCaUCuMi8VjVPJqmcaSHvzXKpUCS/cSlGXALf+VAn1YGJSTifvnusbCGkuPQqqJhHE8xjPYReovDY2QxN4+P1QuWiL+n4/FFV3heU1qmKtpmz8osvGkGy9eXs0I4sCLqUttpSRZxvSLz+gUTn9+WiqFLGzmYbw+juNcSw93wSyy5MBTWwMm/Ocecv3ht9hBpIgFEGUhVoE8hDRIXJd34ccvRWYLmsrqF+hUBqA2EIpQpK8q4MT+4=
+  bucket: urbanstack_analytics
+  local-dir: release
+  acl: public-read
+  skip_cleanup: true
+  on:
+    repo: urbanstackOrg/urbanstack-analytics
+    all_branches: true

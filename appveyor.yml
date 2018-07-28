@@ -1,0 +1,53 @@
+os: unstable
+
+environment:
+  matrix:
+    - nodejs_version: 8.4
+  boto:
+    secure: VWVBTLReDnbgL5sGvnDOgTCy/lJvcmO/6/HHfqHj5/1cjBZtVCr7Kb3ooC+a0QmGUnF1Nltgvu2WIoehvFCfsRO5AKCasxG4uVc94e/luaaGI8EiqznmxGP1PRbcYFrDNg0ZJMZiJO4xPUj+xFnutpBxQ1HXSXoT2mYmX6mGhnatDAB9NX8SMqntlD1bhYiUe+rvjwOqCEX64myUFqRXEbiGRo81sWEfUcP4VFSOYk7ipszM4jIucJG/+4lQrwbWOqgJJP1bFUIDkGhkrxHCIsbAp6+KoDM+/DclKiVAhB4=
+
+platform:
+  - x64
+
+cache:
+  - node_modules -> package.json
+
+matrix:
+  fast_finish: true
+
+build: off
+
+version: '{build}'
+
+shallow_clone: true
+
+clone_depth: 1
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - yarn install
+
+test_script:
+  - node --version
+  - yarn --version
+  - yarn test
+  - yarn run package
+
+artifacts:
+  - path: release
+    name: release
+
+before_deploy:
+  # Add the gsutil configuration file
+  - ps: >-
+      $bytes = [System.Convert]::FromBase64String($env:boto)
+
+      [System.IO.File]::WriteAllBytes("$env:USERPROFILE\.boto", $bytes)
+
+  - python --version
+  - pip --version
+  - pip install gsutil
+
+deploy_script:
+  - ps: ./build_tools/appveyor/deploy_script.ps1
+  - ps: ls release
